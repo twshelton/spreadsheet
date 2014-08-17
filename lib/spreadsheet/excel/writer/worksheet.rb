@@ -470,6 +470,8 @@ and minimal code that generates this warning. Thanks!
     # ○  WSBOOL ➜ 5.113
     write_wsbool
     # ○  Page Settings Block ➜ 4.4
+    write_header
+    write_pagesettings
     # ○  Worksheet Protection Block ➜ 4.18
     # ○  DEFCOLWIDTH ➜ 5.32
     write_defcolwidth
@@ -499,6 +501,32 @@ and minimal code that generates this warning. Thanks!
     # ○  RANGEPROTECTION Additional protection, ➜ 5.84 (BIFF8X only)
     # ●  EOF ➜ 5.36
     write_eof
+  end
+  def write_header
+    write_op opcode(:header), unicode_string(@worksheet.workbook.custom_header, 2) if @worksheet.workbook.has_custom_header?
+  end
+  def write_pagesettings
+    opts = 0          # Option flags
+    opts |= @worksheet.workbook.page_orientation
+                        # Bits    Mask    Contents
+                        # 0       0x0001  0=Print Pages in columns, 1 print in rows
+                        # 1       0x0002  0=Landscape, 1=Portrait
+                        # 2       0x0004  1=Paper size, scaling factor, orientation are not initialized
+                        # 3       0x0008  0=print coloured, 1=black and white
+    data = [
+      0,                                          # Paper Size
+      0,                                          # Scaling Factor
+      0,                                          # Start page number
+      @worksheet.workbook.fit_to_pages_tall,   # Fit worksheet height to this number of pages
+      @worksheet.workbook.fit_to_pages_wide,    # Fit worksheet width to this number of pages
+      opts,               
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+    write_op opcode(:pagesetup), data.pack(binfmt(:pagesetup))
   end
   ##
   # Write record that contains information about the layout of outline symbols.
@@ -850,7 +878,7 @@ and minimal code that generates this warning. Thanks!
          #                1 = Outline buttons below outline group
       1, #     7  0x0080  0 = Outline buttons left of outline group
          #                1 = Outline buttons right of outline group
-      0, #     8  0x0100  0 = Scale printout in percent (➜ 6.89)
+      @worksheet.workbook.fit_printout, #     8  0x0100  0 = Scale printout in percent (➜ 6.89)
          #                1 = Fit printout to number of pages (➜ 6.89)
       0, #     9  0x0200  0 = Save external linked values
          #                    (BIFF3-BIFF4 only, ➜ 5.10)

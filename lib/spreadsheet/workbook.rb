@@ -1,5 +1,6 @@
 require 'spreadsheet/format'
 require 'spreadsheet/encodings'
+require File.dirname(__FILE__) + '/page_settings'
 
 module Spreadsheet
   ##
@@ -11,7 +12,9 @@ module Spreadsheet
   #                   that have no format set explicitly or in
   #                   Row#default_format or Worksheet#default_format.
   class Workbook
+    include Spreadsheet::PageSettings
     include Spreadsheet::Encodings
+
     attr_reader :io, :worksheets, :formats, :fonts
     attr_accessor :active_worksheet, :encoding, :default_format, :version
     def initialize io = nil, opts={:default_format => Format.new}

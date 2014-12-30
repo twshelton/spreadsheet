@@ -476,6 +476,7 @@ and minimal code that generates this warning. Thanks!
     # ○  WSBOOL ➜ 5.113
     write_wsbool
     # ○  Page Settings Block ➜ 4.4
+    write_header
     # ○  Worksheet Protection Block ➜ 4.18
     write_proctection
     # ○  DEFCOLWIDTH ➜ 5.32
@@ -864,11 +865,21 @@ and minimal code that generates this warning. Thanks!
     end
   end
 
+  def write_header
+    write_op opcode(:header), unicode_string(@worksheet.workbook.custom_header, 2) if @worksheet.workbook.custom_header.to_s.length > 0
+  end
+
   def write_pagesetup
     return unless @worksheet.pagesetup
     data = @worksheet.pagesetup[:orig_data].dup
     if @worksheet.pagesetup[:orientation]
       data[5] = @worksheet.pagesetup[:orientation] == :landscape ? 0 : 2
+    end
+    if @worksheet.pagesetup[:fit_to_pages_tall]
+      data[4] = @worksheet.pagesetup[:fit_to_pages_tall]
+    end
+    if @worksheet.pagesetup[:fit_to_pages_wide]
+      data[3] = @worksheet.pagesetup[:fit_to_pages_wide]
     end
 
     if @worksheet.pagesetup[:adjust_to]

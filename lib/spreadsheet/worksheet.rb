@@ -38,7 +38,9 @@ module Spreadsheet
       @pagesetup = {
         :orig_data => [9, 100, 1, 1, 1, 0, 300, 300, 0.5, 0.5, 1],
         :orientation => :portrait,
-        :adjust_to => 100
+        :adjust_to => 100,
+        :fit_to_pages_tall => 1,
+        :fit_to_pages_wide => 1
       }
       @margins = {
         :top => 1,

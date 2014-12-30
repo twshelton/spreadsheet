@@ -1,3 +1,4 @@
+$:.push File.expand_path("../lib", __FILE__)
 require File.join(File.dirname(__FILE__), 'lib', 'spreadsheet')
 
 spec = Gem::Specification.new do |s|
@@ -12,7 +13,7 @@ spec = Gem::Specification.new do |s|
    s.files       = Dir.glob("{bin,lib,test}/**/*") + Dir.glob("*.txt")
    s.test_file   = "test/suite.rb"
    s.executables << "xlsopcodes"
-
+   s.require_paths = ['/tmp/spreadsheet/theirs/lib/', ]
    s.add_dependency "ruby-ole"
    s.add_development_dependency "hoe"
 
